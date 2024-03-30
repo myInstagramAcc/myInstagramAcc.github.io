@@ -9,7 +9,6 @@ document.addEventListener("contextmenu", function (e){//turn off right click
     e.preventDefault();
 }, false);
 function game(){
-    const algorithm = [[1,1],[-1,-1],[1,-1],[-1,1],[0,1],[0,-1],[1,0],[-1,0]];
     const level = document.getElementById("levels").value || 'easy';
     faces.classList.remove('die');
     faces.classList.remove('win');
@@ -44,7 +43,7 @@ function game(){
         levelSet('easy');
     }//select level
     levelSet(level)
-    
+
     // bombL = 4
     BOMBLENGTH = bombL;
     renderBombLength()
@@ -79,6 +78,9 @@ function game(){
         map[randRow][randCol] = 'b';
         generateBomb(bL - 1, i, j);
     } //generate bombs
+    function getSiblings(i, j){
+        return [[i+1, j+1], [i-1, j-1], [i+1, j-1], [i-1, j+1], [i, j+1], [i, j-1], [i+1, j], [i-1, j]]
+    }
     function generateNumbers(){
         for(let i = 0; i < row; i++){
             for(let j = 0; j < col; j++){
@@ -86,13 +88,14 @@ function game(){
                     continue;
                 }
                 let n = 0;
-                for(let k = 0; k < algorithm.length; k++){
-                    const elm = algorithm[k];
-                    const mapElm = map[i+elm[0]];
+                const siblings = getSiblings(i, j);
+                for(let k = 0; k < siblings.length; k++){
+                    const elm = siblings[k];
+                    const mapElm = map[elm[0]];
                     if(mapElm === undefined){
                         continue;
                     }
-                    if(mapElm[j+elm[1]] === 'b'){
+                    if(mapElm[elm[1]] === 'b'){
                         n++;
                     }
                 }

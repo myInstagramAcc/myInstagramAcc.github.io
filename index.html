@@ -2,9 +2,30 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>main page</title>
+    <link rel="stylesheet" href="./styles/style.css">
+    <title>Minesweeper</title>
 </head>
 <body>
-    main
+    <div id="game">
+        <div id="board">
+            <div id="header" class="d-f">
+                <div id="numbers_length" class="d-f">
+                    <div id="mines_hundreds" class="flag_length bg"></div>
+                    <div id="mines_tens" class="flag_length bg"></div>
+                    <div id="mines_ones" class="flag_length bg"></div>
+                </div>
+                <div id="faces" class="smile bg"></div>
+                <select id="levels">
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                </select>
+            </div>
+            <div class="gameGroup">
+
+            </div>
+        </div>
+    </div>
+    <script src="./script/" type="module"></script>
 </body>
 </html>

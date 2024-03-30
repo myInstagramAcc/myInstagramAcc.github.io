@@ -21,7 +21,7 @@
     margin-bottom: 10px;
 }
 .flag{
-    background-position: 147px 60px !important;
+    background-position-x: 150px !important;
 }
 .bg{
     background-image: url("../images/dataImage.gif");
@@ -60,11 +60,11 @@
 .block{
     width: 20px;
     height: 20px;
-    background-size: 163px;
+    background-size: 166px;
     /*cursor: pointer;*/
 }
 .block.hidden{
-    background-position: 2px -43px;
+    background-position: 2px -44px;
 }
 #faces.mouseDown{
     background-position-x: -40px;
@@ -76,4 +76,13 @@
 .n{
     background-size: 172px;
     background-position-y: -28px;
+}
+.bomb, .flag{
+    background-position-y: 61px !important;
+}
+.bomb{
+    background-position-x: -73px;
+}
+.bombClicked{
+    background-position-x: -35px;
 }

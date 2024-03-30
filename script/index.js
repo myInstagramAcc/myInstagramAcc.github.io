@@ -43,8 +43,6 @@ function game(){
         levelSet('easy');
     }//select level
     levelSet(level)
-
-    // bombL = 4
     BOMBLENGTH = bombL;
     renderBombLength()
     function genBoard(){
@@ -104,7 +102,95 @@ function game(){
         }
         console.log(map)//test
     }
-
+    function clearZeroes(i, j){
+        const siblings = getSiblings(i, j);
+        for(let i = 0; i < siblings.length; i++){
+            const elm = siblings[i];
+            const i2 = elm[0];
+            const mapElm = map[i2];
+            if(mapElm === undefined){
+                continue;
+            }
+            const j2 = elm[1];
+            const el = document.getElementById(`n${i2}_${j2}`);
+            if(!el || !(el.classList.contains('hidden')) || el.classList.contains('flag')){
+                continue;
+            }
+            click(el, i2, j2)
+            if(mapElm[j2] === 0){
+                clearZeroes(i2, j2)
+            }
+        }
+    }
+    function mouseDownHandler(e) {
+        e.preventDefault();
+        const curT = e.currentTarget;
+        const classList = curT.classList;
+        if(e.button === 0){
+            if(classList.contains('flag')){
+                return;
+            }
+            if(classList.contains('hidden')) {
+                classList.add("mouseDown");
+                faces.classList.add('surprise')
+            }
+            return;
+        }
+        if(e.button === 2){
+            classList.toggle('flag')// I do focusss :)
+            if(curT.flag){
+                bombL++;
+                curT.flag = false;
+            }
+            else{
+                curT.flag = true;
+                bombL--;
+            }
+            renderBombLength()
+        }
+    }
+    function mouseUpLeaveHandler(e) {
+        const classList = e.currentTarget.classList;
+        if(classList.contains('flag')){
+            return;
+        }
+        if(classList.contains('hidden')) {
+            classList.remove("mouseDown");
+            faces.classList.remove('surprise')
+        }
+    }
+    function click(el, i, j) {
+        const classList = el.classList;
+        el.removeEventListener('click', click)
+        el.removeEventListener('mousedown', mouseDownHandler)
+        el.removeEventListener('mouseup', mouseUpLeaveHandler)
+        el.removeEventListener('mouseleave', mouseUpLeaveHandler)
+        if(classList.contains('flag')){
+            return;
+        }
+        classList.remove('hidden');
+        el.hide = false;
+        if(first){
+            first = false;
+            genBoard();
+            generateBomb(BOMBLENGTH, i, j);
+            return click(el, i, j);
+        }
+        const elmMap = map[i][j];
+        if(elmMap === 'b'){
+            // alert('your lost');
+            faces.classList.add('die');
+            return;
+        }
+        if (elmMap === 0) {
+            classList.add('mouseDown');
+            clearZeroes(i, j);
+            return;
+        }
+        el.style.backgroundPositionX = elmMap * numberOpenedBlock + 'px';
+        classList.add('n');
+        checkWin();
+    }
     function render() {
         board.innerHTML = '';
         for (let i = 0; i < row; i++) {
@@ -114,83 +200,11 @@ function game(){
                 const elm = document.createElement("div");
                 elm.className = "block bg hidden";
                 elm.id = `n${i}_${j}`
-                function mouseDownHandler(e) {
-                    e.preventDefault();
-                    const curT = e.currentTarget;
-                    const classList = curT.classList;
-                    if(e.button === 0){
-                        if(classList.contains('flag')){
-                            return;
-                        }
-                        if(classList.contains('hidden')) {
-                            classList.add("mouseDown");
-                            faces.classList.add('surprise')
-                        }
-                        return;
-                    }
-                    if(e.button === 2){
-                        classList.toggle('flag')// I do focusss :)
-                        if(curT.flag){
-                            bombL++;
-                            curT.flag = false;
-                        }
-                        else{
-                            curT.flag = true;
-                            bombL--;
-                        }
-                        renderBombLength()
-                    }
-                }
-
-                function mouseUpLeaveHandler(e) {
-                    const classList = e.currentTarget.classList;
-                    if(classList.contains('flag')){
-                        return;
-                    }
-                    if(classList.contains('hidden')) {
-                        classList.remove("mouseDown");
-                        faces.classList.remove('surprise')
-                    }
-                }
-                function removeZeros(i, j){
-
-                }
-                function clickHandler(e) {
-                    const eTarget = e.currentTarget;
-                    const classList = eTarget.classList;
-                    eTarget.removeEventListener('click', clickHandler)
-                    eTarget.removeEventListener('mousedown', mouseDownHandler)
-                    eTarget.removeEventListener('mouseup', mouseUpLeaveHandler)
-                    eTarget.removeEventListener('mouseleave', mouseUpLeaveHandler)
-                    if(classList.contains('flag')){
-                        return;
-                    }
-                    classList.remove('hidden');
-                    if(first){
-                        first = false;
-                        genBoard();
-                        generateBomb(BOMBLENGTH, i, j);
-                        return clickHandler(e);
-                    }
-                    const elmMap = map[i][j];
-                    if(elmMap === 'b'){
-                        // alert('your lost');
-                        faces.classList.add('die');
-                        return;
-                    }
-                    if (elmMap === 0) {
-                        classList.add('mouseDown');
-                        return;
-                    }
-                    eTarget.style.backgroundPositionX = elmMap * numberOpenedBlock + 'px';
-                    classList.add('n');
-                    checkWin();
-                }
-
+                elm.hide = true;
                 elm.addEventListener("mousedown", mouseDownHandler);
                 elm.addEventListener("mouseup", mouseUpLeaveHandler);
                 elm.addEventListener("mouseleave", mouseUpLeaveHandler);
-                elm.addEventListener('click', clickHandler);
+                elm.addEventListener('click', (e) => click(e.currentTarget, i, j));
 
                 newRow.appendChild(elm);
             }
@@ -199,12 +213,17 @@ function game(){
     }
     render();
     function checkWin(){
-        const hiddens = document.querySelectorAll('.hidden');
-        if(hiddens.length === BOMBLENGTH){
+        const block = document.querySelectorAll('.block');
+        let len = 0;
+        for(let i = 0; i < block.length; i++){
+            if(block[i].hide){
+                len++;
+            }
+        }
+        if(len === BOMBLENGTH){
             faces.classList.add('win');
             console.log('win')
         }
-
     }
 }
 game();

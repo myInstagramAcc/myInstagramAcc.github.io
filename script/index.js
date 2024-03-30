@@ -79,6 +79,20 @@ function game(){
     function getSiblings(i, j){
         return [[i+1, j+1], [i-1, j-1], [i+1, j-1], [i-1, j+1], [i, j+1], [i, j-1], [i+1, j], [i-1, j]]
     }
+    function showAllBombs(){
+        for(let i = 0; i < row; i++){
+            for(let j = 0; j < col; j++){
+                if(map[i][j] === 'b'){
+                    const elm = document.getElementById(`n${i}_${j}`);
+                    if(!elm){
+                        continue;
+                    }
+                    elm.classList.remove('hidden');
+                    elm.classList.add('bomb')
+                }
+            }
+        }
+    }
     function generateNumbers(){
         for(let i = 0; i < row; i++){
             for(let j = 0; j < col; j++){
@@ -159,8 +173,38 @@ function game(){
             faces.classList.remove('surprise')
         }
     }
+    function clickClear(i, j, number){
+        const siblings = getSiblings(i, j);
+        const nodeList = []
+        let len = 0;
+        for(let i = 0; i < siblings.length; i++){
+            if(len > number){
+                return;
+            }
+            const elm = siblings[i];
+            const i2 = elm[0];
+            const j2 = elm[1];
+            const el = document.getElementById(`n${i2}_${j2}`);
+            if(!el){
+                continue;
+            }
+            if(el.classList.contains('flag')){
+                len++;
+                continue;
+            }
+            nodeList.push({el: el, i: i2, j:j2})
+        }
+        if(len !== number){
+            return;
+        }
+        for(let i = 0; i < nodeList.length; i++){
+            const elm =  nodeList[i];
+           click(elm.el, elm.i, elm.j)
+        }
+    }
     function click(el, i, j) {
         const classList = el.classList;
+        //remove event listeners
         el.removeEventListener('click', click)
         el.removeEventListener('mousedown', mouseDownHandler)
         el.removeEventListener('mouseup', mouseUpLeaveHandler)
@@ -179,6 +223,9 @@ function game(){
         const elmMap = map[i][j];
         if(elmMap === 'b'){
             // alert('your lost');
+
+            showAllBombs();
+            el.classList.add('bombClicked')
             faces.classList.add('die');
             return;
         }
@@ -187,6 +234,9 @@ function game(){
             clearZeroes(i, j);
             return;
         }
+        //add onclick
+        el.addEventListener('click', () => clickClear(i, j, elmMap))
+
         el.style.backgroundPositionX = elmMap * numberOpenedBlock + 'px';
         classList.add('n');
         checkWin();
@@ -222,7 +272,7 @@ function game(){
         }
         if(len === BOMBLENGTH){
             faces.classList.add('win');
-            console.log('win')
+            alert('you are win ::)))))')
         }
     }
 }

@@ -4,15 +4,16 @@
     outline: none;
     box-sizing: border-box;
 } /*RESET*/
-
+#game{
+    width: 100%;
+    overflow-x: auto;
+}
 #board{
+    width: max-content;
     border: 1px solid black;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
     padding: 10px;
     background-color: silver;
+    margin: auto;
 }
 #header{
     width: 100%;
@@ -85,4 +86,23 @@
 }
 .bombClicked{
     background-position-x: -35px;
+}
+.changeFlagClick{
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    background-color: black;
+    color: rgb(189, 183, 175);
+    font-size: 55px;
+}
+.changeFlagClick i {
+    margin: 10px;
+}
+.changeFlagClick.active{
+    color: red;
+}
+.gameGroup.active .hidden:not(.flag){
+    background-image: url(../images/notVisibleFlag.svg);
+    background-position: 0;
+    background-size: 20px;
 }

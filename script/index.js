@@ -8,19 +8,30 @@ const dataTools = [
 document.addEventListener("contextmenu", function (e){//turn off right click
     e.preventDefault();
 }, false);
+alert('NEWS: Added mobile Version')
 function game(){
     const level = document.getElementById("levels").value || 'easy';
     faces.classList.remove('die');
     faces.classList.remove('win');
-    let row = 0;
-    let col = 0;
+    let row, col, bombL, BOMBLENGTH;
     let first = true;
+    let flag = false;
     const board = document.querySelector('.gameGroup');
     const numberBackgroundSizePlus = -22;
     const numberOpenedBlock = -19
     let map = [];
-    let bombL = 0;
-    let BOMBLENGTH = 0;
+    //seter flag
+    const changeFlagClick = document.querySelector(".changeFlagClick");
+    changeFlagClick.onclick = () => {
+        flag = !flag;//toggle
+        if(flag){
+            changeFlagClick.classList.add("active");
+            board.classList.add("active")
+            return;
+        }
+        changeFlagClick.classList.remove("active");
+        board.classList.remove("active")
+    }
     function levelSet(l){
         if (l==="easy"){
             row=8
@@ -150,7 +161,7 @@ function game(){
             }
             return;
         }
-        if(e.button === 2){
+        if(e.button === 2 || flag){
             classList.toggle('flag')// I do focusss :)
             if(curT.flag){
                 bombL++;
@@ -160,7 +171,7 @@ function game(){
                 curT.flag = true;
                 bombL--;
             }
-            renderBombLength()
+            return renderBombLength()
         }
     }
     function mouseUpLeaveHandler(e) {
@@ -209,6 +220,9 @@ function game(){
         el.removeEventListener('mousedown', mouseDownHandler)
         el.removeEventListener('mouseup', mouseUpLeaveHandler)
         el.removeEventListener('mouseleave', mouseUpLeaveHandler)
+        if(flag && el.classList.contains('hidden')){
+            return mouseDownHandler({currentTarget: el, "preventDefault": () => ''})
+        }
         if(classList.contains('flag')){
             return;
         }
